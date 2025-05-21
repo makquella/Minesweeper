@@ -43,3 +43,11 @@ python main.py --difficulty medium
 
 # додатково можна задати розмір вікна
 python main.py --difficulty hard --width 1024 --height 800
+
+
+## Тестування локально
+
+```bash
+python -m pip install -r requirements.txt
+python -m flake8 .
+python -m pytest          # або pytest -m "not slow

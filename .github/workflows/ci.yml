@@ -2,24 +2,37 @@ name: CI
 
 on:
   push:
-    branches: [ dev, main ]
+    branches: [ main, master, dev ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt flake8 pytest
-      - name: Lint code
-        run: flake8 .
-      - name: Run tests
-        run: pytest
+          pip install -r requirements.txt
+
+      - name: Lint with flake8
+        run: |
+          flake8 . --format=html --htmldir=flake8-report
+      - name: Run Pytest
+        run: |
+          pytest --html=pytest-report.html --self-contained-html -m "not slow"
+
+      - name: Upload HTML reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            flake8-report
+            pytest-report.html
