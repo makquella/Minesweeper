@@ -27,7 +27,6 @@ usecaseDiagram
   Player --> (Quit Game)
   (Reveal Cell) --> (Win Game)
   (Reveal Cell) --> (Lose Game)
-
 flowchart TD
   Start([Start]) --> Generate["Generate Field"]
   Generate --> Display["Draw Grid"]
@@ -43,14 +42,12 @@ flowchart TD
   Flag --> Display
   Lose --> End([End])
   Win --> End([End])
-
 flowchart LR
   RestartKey[/Press R/] --> _restart["GameUI._restart()"]
   _restart --> Generate
   Generate --> ResetTimer["start_ticks reset"]
   ResetTimer --> DrawGrid["Draw new field"]
   DrawGrid --> EndRestart([Playing])
-
 classDiagram
   class Board {
     - int width
@@ -67,7 +64,6 @@ classDiagram
     + toggle_flag(row, col)
     + check_win() bool
   }
-
   class GameUI {
     - Board board
     - Surface screen
@@ -79,11 +75,9 @@ classDiagram
     + _draw()
     + _draw_message(text)
   }
-
   class Main {
     + main(): None
   }
-
   Player --> Main : invokes
   Main --> Board
   Main --> GameUI
