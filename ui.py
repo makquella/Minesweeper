@@ -46,11 +46,17 @@ class GameUI:
                 # Левая и правая кнопки мыши
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mx, my = event.pos
-                    col, row = mx // CELL_SIZE, my // CELL_SIZE
-                    if event.button == 1:
-                        self.board.reveal(row, col)
-                    elif event.button == 3:
-                        self.board.toggle_flag(row, col)
+                    # Если кликнули в области заголовка — игнорируем
+                    if my < HEADER_HEIGHT:
+                        continue
+
+                    col = mx // CELL_SIZE
+                    row = (my - HEADER_HEIGHT) // CELL_SIZE
+                    if 0 <= row < self.board.height and 0 <= col < self.board.width:
+                        if event.button == 1:
+                            self.board.reveal(row, col)
+                        elif event.button == 3:
+                            self.board.toggle_flag(row, col)
 
                 # Клавиша R — рестарт
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
