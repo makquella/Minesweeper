@@ -1,25 +1,40 @@
 import pygame
 
 CELL_SIZE = 32
+HEADER_HEIGHT = 40   # высота области для таймера и счётчика мин
+
 COLORS = {
-    'covered': (192, 192, 192),
+    'covered':  (192, 192, 192),
     'revealed': (224, 224, 224),
-    'flag': (255, 0, 0),
-    'mine': (0, 0, 0),
-    'text': (0, 0, 255),
-    'border': (0, 0, 0),
+    'flag':     (255, 0, 0),
+    'mine':     (0, 0, 0),
+    'text':     (0, 0, 255),
+    'border':   (0, 0, 0),
+    'header_bg': (200, 200, 200),
 }
 
 
 class GameUI:
     def __init__(self, board, width=None, height=None):
         pygame.init()
-        win_w = width or board.width * CELL_SIZE
-        win_h = height or board.height * CELL_SIZE
+
+        # количество пикселей сетки
+        grid_w = board.width * CELL_SIZE
+        grid_h = board.height * CELL_SIZE
+
+        # итоговые размеры окна: над сеткой область для заголовка
+        win_w = width or grid_w
+        win_h = height or (HEADER_HEIGHT + grid_h)
+
         self.screen = pygame.display.set_mode((win_w, win_h))
         pygame.display.set_caption("Minesweeper")
+
         self.font = pygame.font.SysFont(None, CELL_SIZE // 2)
+        self.header_font = pygame.font.SysFont(None, HEADER_HEIGHT // 2)
+
         self.board = board
+        # Запомним, когда стартовала игра
+        self.start_ticks = pygame.time.get_ticks()
 
     def run(self):
         running = True
@@ -58,9 +73,31 @@ class GameUI:
 
     def _draw(self):
         self.screen.fill(COLORS['border'])
+
+        # 1) Рисуем фон заголовка
+        header_rect = pygame.Rect(0, 0, self.screen.get_width(), HEADER_HEIGHT)
+        pygame.draw.rect(self.screen, COLORS['header_bg'], header_rect)
+
+        # 2) Рисуем таймер (секунды с начала)
+        elapsed_ms = pygame.time.get_ticks() - self.start_ticks
+        elapsed_sec = elapsed_ms // 1000
+        timer_surf = self.header_font.render(f"Time: {elapsed_sec}s", True, COLORS['text'])
+        self.screen.blit(timer_surf, (10, (HEADER_HEIGHT - timer_surf.get_height()) // 2))
+
+        # 3) Рисуем счётчик оставшихся мин
+        # посчитаем, сколько флажков установлено
+        flags = sum(sum(1 for cell in row if cell) for row in self.board.flagged)
+        mines_left = max(self.board.mines - flags, 0)
+        mines_surf = self.header_font.render(f"Mines: {mines_left}", True, COLORS['text'])
+        # справа отступ 10px
+        x_pos = self.screen.get_width() - mines_surf.get_width() - 10
+        self.screen.blit(mines_surf, (x_pos, (HEADER_HEIGHT - mines_surf.get_height()) // 2))
+
+        # 4) Рисуем сетку со смещением по Y = HEADER_HEIGHT
         for r in range(self.board.height):
             for c in range(self.board.width):
-                x, y = c * CELL_SIZE, r * CELL_SIZE
+                x = c * CELL_SIZE
+                y = HEADER_HEIGHT + r * CELL_SIZE
                 rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
 
                 if self.board.revealed[r][c]:
