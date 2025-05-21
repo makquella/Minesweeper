@@ -50,4 +50,4 @@ python main.py --difficulty hard --width 1024 --height 800
 ```bash
 python -m pip install -r requirements.txt
 python -m flake8 .
-python -m pytest          # або pytest -m "not slow
+python -m pytest      
