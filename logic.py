@@ -42,6 +42,47 @@ class Board:
                     cnt += 1
         return cnt
 
+    def reveal(self, row, col):
+        """
+        Открыть клетку (row, col).
+        Если это мина — установим game_over=True.
+        Если число соседей == 0 — откроем всех соседей рекурсивно.
+        """
+        if self.flagged[row][col] or self.revealed[row][col]:
+            return  # ничего не делаем, если уже открыто или отмечено флажком
+
+        self.revealed[row][col] = True
+
+        if self.grid[row][col] == '*':
+            # попали на мину
+            self.game_over = True
+            return
+
+        # если вокруг нет мин — открываем соседей
+        if self.numbers[row][col] == 0:
+            for r in range(max(0, row - 1), min(self.height, row + 2)):
+                for c in range(max(0, col - 1), min(self.width, col + 2)):
+                    if not self.revealed[r][c]:
+                        self.reveal(r, c)
+
+    def toggle_flag(self, row, col):
+        """
+        Поставить или убрать флажок:
+        если клетка не открыта, переключаем состояние флага.
+        """
+        if not self.revealed[row][col]:
+            self.flagged[row][col] = not self.flagged[row][col]
+
+    def check_win(self):
+        """
+        Возвращает True, если все не минные клетки открыты.
+        """
+        for r in range(self.height):
+            for c in range(self.width):
+                if self.grid[r][c] != '*' and not self.revealed[r][c]:
+                    return False
+        return True
+
 
 def count_adjacent_mines(board, row, col):
     """
