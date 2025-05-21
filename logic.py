@@ -3,6 +3,7 @@ class Board:
         # TODO: реалізувати генерацію поля
         pass
 
+
 def count_adjacent_mines(board, row, col):
     """
     Підраховує кількість мін навколо клітини (row, col).

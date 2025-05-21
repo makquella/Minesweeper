@@ -1,5 +1,6 @@
 import pygame
 
+
 class GameUI:
     def __init__(self, board, width=800, height=600):
         pygame.init()
