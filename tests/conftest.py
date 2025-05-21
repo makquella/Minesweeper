@@ -1,4 +1,7 @@
+import os, sys
 import pytest
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+sys.path.insert(0, ROOT)        # ← додає корінь репозиторію в sys.path
 from logic import Board
 
 
