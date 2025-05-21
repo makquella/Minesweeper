@@ -18,19 +18,33 @@ def main():
     parser.add_argument(
         "--width",
         type=int,
-        default=800,
-        help="Ширина вікна (пікселів, за замовчуванням 800)"
+        default=None,
+        help="Ширина вікна (пікселів) або None для розрахунку по клітинках"
     )
     parser.add_argument(
         "--height",
         type=int,
-        default=600,
-        help="Висота вікна (пікселів, за замовчуванням 600)"
+        default=None,
+        help="Висота вікна (пікселів) або None для розрахунку по клітинках"
     )
     args = parser.parse_args()
 
-    board = Board()
-    game = GameUI(board, width=args.width, height=args.height)
+    # --- НОВЫЙ БЛОК: выбор параметров по сложности ---
+    DIFFICULTIES = {
+        'easy':   {'width': 9,  'height': 9,  'mines': 10},
+        'medium': {'width': 16, 'height': 16, 'mines': 40},
+        'hard':   {'width': 30, 'height': 16, 'mines': 99},
+    }
+    cfg = DIFFICULTIES[args.difficulty]
+
+    board = Board(width=cfg['width'],
+                  height=cfg['height'],
+                  mines=cfg['mines'])
+    # ----------------------------------------------
+
+    game = GameUI(board,
+                  width=args.width,
+                  height=args.height)
     game.run()
 
 
